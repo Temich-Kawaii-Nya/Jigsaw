@@ -1,4 +1,5 @@
 using R3;
+using System.ComponentModel;
 using UnityEngine;
 using Zenject;
 
@@ -10,30 +11,31 @@ public class GameplayEntryPoint : MonoBehaviour
     [Inject] private DiContainer _container;
     public Observable<GameplayExitParams> Run(UIRootView UIRoot, GameplayEnterParams enterParams)
     {
-        var uiScene = Instantiate(_gameplayRootBinderPrefub);
+        _container.BindInterfacesAndSelfTo<DefaultImageLoader>().AsSingle().NonLazy();
+        var adapter = new GameplayEnterParamsAdapter(enterParams, _container.Resolve<IImageLoader>());
+
+        _container.BindInstance<GameplayEnterParamsAdapter>(adapter).AsSingle();
+        var grid = new Grid(adapter.GridSize, adapter.CellSize);
+        var gridProxy = new GridProxy(grid);
+        _container.Bind<GridService>().AsSingle().WithArguments(_worldGrid, gridProxy);
+        GameplayInstaller.Install(_container);
+        var uiScene = _container.InstantiatePrefabForComponent<UIGameplayRootBinder>(_gameplayRootBinderPrefub);
+        
         UIRoot.AttachScreenUI(uiScene.gameObject);
 
         var exitSceneSignalSubj = new Subject<Unit>();
 
         uiScene.Bind(exitSceneSignalSubj);
 
-        _container.BindInterfacesAndSelfTo<DefaultImageLoader>().AsSingle().NonLazy();
         
-        var adapter = new GameplayEnterParamsAdapter(enterParams, _container.Resolve<IImageLoader>());
-
-        _container.BindInstance<GameplayEnterParamsAdapter>(adapter).AsSingle();
          
-        var grid = new Grid(adapter.GridSize, adapter.CellSize);
-        var gridProxy = new GridProxy(grid);
 
-        _container.Bind<GridService>().AsSingle().WithArguments(_worldGrid, gridProxy);
 
         var mainMenuEnterParams = new MainMenuEnterParams(1, 2, 3, 4);
         var exitParams = new GameplayExitParams(mainMenuEnterParams);
 
         var exitToMainMenuSceneSignal = exitSceneSignalSubj.Select(_ => exitParams);
 
-        GameplayInstaller.Install(_container);
 
 
         var puzzleGenerator = _container.Resolve<PuzzlesGenerator>();

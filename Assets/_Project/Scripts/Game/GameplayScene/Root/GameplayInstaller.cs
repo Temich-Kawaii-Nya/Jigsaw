@@ -10,21 +10,17 @@ public class GameplayInstaller : Installer<GameplayInstaller>
     }
     public override void InstallBindings()
     {
+        Container.Bind<EventBus>().AsSingle();
+
+
         Container.Bind<BoardService>().AsSingle();
         var gameState = _gameStateProvider.PuzzleState;
         var gridService = Container.Resolve<GridService>();
         var boardService = Container.Resolve<BoardService>();
         var puzzleService = new PuzzleService(gameState.Puzzles, _gameStateProvider, gridService, boardService);
-        //// TEST
+        
+        
 
-        //puzzleService.CreatePuzzle();
-        //puzzleService.CreatePuzzle();
-        //puzzleService.CreatePuzzle();
-        //puzzleService.CreatePuzzle();
-
-
-
-        ////
         Container.Bind<IPuzzleGenerator>().To<DefaultPuzzleGenerator>().AsSingle().NonLazy();
         var worldGameplayRootViewModel = new WorldGameplayRootViewModel(puzzleService);
         Container.Bind<PuzzleService>().FromInstance(puzzleService).AsSingle().NonLazy();

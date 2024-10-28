@@ -2,7 +2,6 @@ using System.Collections.Generic;
 using ObservableCollections;
 using UnityEngine;
 using R3;
-using System.Linq;
 public class PuzzleService
 {
     public IObservableCollection<PuzzleViewModel> AllPuzzles => _allPuzzles;
