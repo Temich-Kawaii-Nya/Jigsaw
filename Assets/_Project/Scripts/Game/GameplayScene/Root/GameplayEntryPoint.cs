@@ -1,5 +1,4 @@
 using R3;
-using System.ComponentModel;
 using UnityEngine;
 using Zenject;
 
@@ -13,7 +12,6 @@ public class GameplayEntryPoint : MonoBehaviour
     {
         _container.BindInterfacesAndSelfTo<DefaultImageLoader>().AsSingle().NonLazy();
         var adapter = new GameplayEnterParamsAdapter(enterParams, _container.Resolve<IImageLoader>());
-
         _container.BindInstance<GameplayEnterParamsAdapter>(adapter).AsSingle();
         var grid = new Grid(adapter.GridSize, adapter.CellSize);
         var gridProxy = new GridProxy(grid);
@@ -27,16 +25,10 @@ public class GameplayEntryPoint : MonoBehaviour
 
         uiScene.Bind(exitSceneSignalSubj);
 
-        
-         
-
-
         var mainMenuEnterParams = new MainMenuEnterParams(1, 2, 3, 4);
         var exitParams = new GameplayExitParams(mainMenuEnterParams);
 
         var exitToMainMenuSceneSignal = exitSceneSignalSubj.Select(_ => exitParams);
-
-
 
         var puzzleGenerator = _container.Resolve<PuzzlesGenerator>();
 
@@ -51,6 +43,17 @@ public class GameplayEntryPoint : MonoBehaviour
 
         _worldGameplayRootBinderPrefub = Instantiate(_worldGameplayRootBinderPrefub);
         _worldGameplayRootBinderPrefub.Bind(_container.Resolve<WorldGameplayRootViewModel>(), _generator);
+
+        var boardFactory = _container.Resolve<BoardFactory>();
+       
+        boardFactory.CreateBackground();
+        boardFactory.CreateBackgroundBoard();
+
+
+        // TEST
+        _container.Resolve<PuzzleService>().ShufflePuzzles(); //TODo
+        //
+
 
         return exitToMainMenuSceneSignal;
     }

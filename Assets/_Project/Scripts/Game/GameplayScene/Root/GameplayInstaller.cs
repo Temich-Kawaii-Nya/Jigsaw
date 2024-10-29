@@ -18,8 +18,7 @@ public class GameplayInstaller : Installer<GameplayInstaller>
         var gridService = Container.Resolve<GridService>();
         var boardService = Container.Resolve<BoardService>();
         var puzzleService = new PuzzleService(gameState.Puzzles, _gameStateProvider, gridService, boardService);
-        
-        
+
 
         Container.Bind<IPuzzleGenerator>().To<DefaultPuzzleGenerator>().AsSingle().NonLazy();
         var worldGameplayRootViewModel = new WorldGameplayRootViewModel(puzzleService);
@@ -28,5 +27,6 @@ public class GameplayInstaller : Installer<GameplayInstaller>
         Container.Bind<PuzzlesGenerator>().AsSingle().NonLazy();
         Container.Bind<InputService>().AsSingle().NonLazy();
         Container.Bind<WorldGameplayRootViewModel>().FromInstance(worldGameplayRootViewModel).AsSingle().NonLazy();
+        Container.Bind<BoardFactory>().To<DefaultBoardFactory>().AsSingle();
     }
 }

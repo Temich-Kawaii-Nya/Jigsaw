@@ -5,7 +5,8 @@ public class GridService
     private UnityEngine.Grid _sceneGrid; //TODO убрать юнитовскую сетку
     public GridProxy GridModel { get; }
     private readonly EventBus _eventBus;
-
+    private Rect _gridRect;
+    private Rect _maxGridRect;
     public GridService(UnityEngine.Grid sceneGrid, GridProxy gridProxy, EventBus eventBus)
     {
         _sceneGrid = sceneGrid;
@@ -13,6 +14,65 @@ public class GridService
         _eventBus = eventBus;
 
         _sceneGrid.cellSize = gridProxy.gridSize;
+
+        SetRect();
+    }
+    private void SetRect()
+    {
+        Vector2 pos = new (GridModel.Size.y * GridModel.gridSize.x, GridModel.Size.x * GridModel.gridSize.y);
+        _gridRect = new(0, 0, pos.x, pos.y);
+
+        Vector2 leftBot = Camera.main.ScreenToWorldPoint(new Vector3(0,0,-1));
+        Vector2 rightTop = Camera.main.ScreenToWorldPoint(new Vector3(Screen.width, Screen.height, -1));
+
+        _maxGridRect = new Rect(leftBot.x, leftBot.y, rightTop.x, rightTop.y);
+
+        Debug.Log("MinGrid: " + _gridRect);
+        Debug.Log("MaxGrid: " + _maxGridRect);
+    }
+    public Vector3 GetRandomPositionOutSideTheGrid()
+    {
+        int side = Random.Range(0, 4);
+        float x;
+        float y;
+        switch (side)
+        {
+            case 0:
+                x = Random.Range(_maxGridRect.x, _gridRect.x);
+                y = Random.Range(_maxGridRect.y, _maxGridRect.height); //TODO 
+                break;
+            case 1:
+                x = Random.Range(_maxGridRect.x, _maxGridRect.width);
+                y = Random.Range(_gridRect.height, _maxGridRect.height); 
+                break;
+            case 2:
+                x = Random.Range(_gridRect.width, _maxGridRect.width);
+                y = Random.Range(_maxGridRect.y, _maxGridRect.height); 
+                break;
+            case 3:
+                x = Random.Range(_maxGridRect.x, _maxGridRect.width);
+                y = Random.Range(_maxGridRect.y, _gridRect.y);
+                break;
+            default:
+                x = 0;
+                y = 0;
+                break;
+        }
+        return new Vector3(x, y, 10);
+    }
+    public Vector3 GetCellCenterPosFromWordlPos(Vector3 position)
+    {
+        Vector3 cell = GetCellFromWorldPosition(position);
+        if (!IsPositionInGrid(position))
+            return position;
+        return GetWorldPositionFromIndex((int)cell.x, (int)cell.y);
+    }
+    public bool IsPositionInGrid(Vector3 position)
+    {
+        Vector3 cell = GetCellFromWorldPosition(position);
+        if (cell.x < 0 || cell.y < 0 || cell.x >= GridModel.Size.x || cell.y >= GridModel.Size.y)
+            return false;
+        return true;
     }
     public Vector3 GetWorldPositionFromIndex(int i, int j)
     {

@@ -41,6 +41,13 @@ public class PuzzleService
         });
 
     }
+    public void ShufflePuzzles()
+    {
+        foreach (var item in _puzzlesProxiesMap)
+        {
+            item.Value.Position.Value = _gridService.GetRandomPositionOutSideTheGrid();
+        }
+    }
     public PuzzleGroupViewModel CreateGroup()
     {
         var model = new PuzzleGroupEntity(_gameStateProvider.PuzzleState.GetPuzzleId(), Vector3.zero);
@@ -87,8 +94,6 @@ public class PuzzleService
             Rotation = 0,
             index = index
         };
-
-
         var newProxy = new PuzzleEntityProxy(newPuzzle);
 
         _gameStateProvider.PuzzleState.Puzzles.Add(newProxy);
@@ -116,7 +121,6 @@ public class PuzzleService
 
             puzzle.Position.Value = newPos;
         }
-        
     }
     public Vector3 myRotateAround(Vector3 start, Vector3 point, Vector3 axis, float angle)
     {
@@ -134,9 +138,8 @@ public class PuzzleService
         proxy.Position.Value = newPosition;
     }
     public void MoveGroupToPosition(PuzzleGroupEntityProxy proxy, Vector3 newPos)
-    {
-        var index = _gridService.GetCellFromWorldPosition(newPos);
-        newPos = _gridService.GetWorldPositionFromIndex((int)index.x, (int)index.y);
+    { 
+        newPos = _gridService.GetCellCenterPosFromWordlPos(newPos);
         var prevPos = proxy.Position.Value;
         var delta = newPos - prevPos;
         delta.z = 0;
@@ -152,6 +155,8 @@ public class PuzzleService
     {
         _puzzlesProxiesMap.TryGetValue(puzzleEntityId, out PuzzleEntityProxy proxy);
         var index = _gridService.GetCellFromWorldPosition(proxy.Position.Value);
+        if (!_gridService.IsPositionInGrid(proxy.Position.Value))
+            return;
         if (proxy.Parent.Value == null)
             MovePuzzleToPosition(puzzleEntityId, _gridService.GetWorldPositionFromIndex((int)index.x, (int)index.y));
         if (new Vector2Int((int)index.x, (int)index.y) != proxy.Index)
@@ -162,7 +167,6 @@ public class PuzzleService
     }
     public void CheckCombinations(PuzzleEntityProxy proxy)
     {
-        Debug.Log("CHeck");
         var list = GetProxiesNearby(proxy);
         for (int i = 0; i < list.Count; i++)
         {
