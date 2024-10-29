@@ -38,20 +38,20 @@ public class GridService
         switch (side)
         {
             case 0:
-                x = Random.Range(_maxGridRect.x, _gridRect.x);
-                y = Random.Range(_maxGridRect.y, _maxGridRect.height); //TODO 
+                x = Random.Range(_maxGridRect.x + GridModel.gridSize.x / 2f, _gridRect.x - GridModel.gridSize.x / 2f);
+                y = Random.Range(_maxGridRect.y + GridModel.gridSize.y / 2f, _maxGridRect.height - GridModel.gridSize.y / 2f); //TODO 
                 break;
             case 1:
-                x = Random.Range(_maxGridRect.x, _maxGridRect.width);
-                y = Random.Range(_gridRect.height, _maxGridRect.height); 
+                x = Random.Range(_maxGridRect.x + GridModel.gridSize.x / 2f, _maxGridRect.width - GridModel.gridSize.x / 2f);
+                y = Random.Range(_gridRect.height + GridModel.gridSize.y / 2f, _maxGridRect.height - GridModel.gridSize.y / 2f); 
                 break;
             case 2:
-                x = Random.Range(_gridRect.width, _maxGridRect.width);
-                y = Random.Range(_maxGridRect.y, _maxGridRect.height); 
+                x = Random.Range(_gridRect.width + GridModel.gridSize.x / 2f, _maxGridRect.width - GridModel.gridSize.x / 2f);
+                y = Random.Range(_maxGridRect.y + GridModel.gridSize.y / 2f, _maxGridRect.height - GridModel.gridSize.y / 2f); 
                 break;
             case 3:
-                x = Random.Range(_maxGridRect.x, _maxGridRect.width);
-                y = Random.Range(_maxGridRect.y, _gridRect.y);
+                x = Random.Range(_maxGridRect.x + GridModel.gridSize.x / 2f, _maxGridRect.width - GridModel.gridSize.x / 2f);
+                y = Random.Range(_maxGridRect.y + GridModel.gridSize.y / 2f, _gridRect.y - GridModel.gridSize.y / 2f);
                 break;
             default:
                 x = 0;
