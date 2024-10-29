@@ -29,8 +29,6 @@ public class PuzzleElementToGenerate
         maskWidth = _baseSize;
         maskHeight = _baseSize;
 
-
-        // Expand mask canvas if there're convex sides
         if (top == 1)
         {
             maskHeight += _subElement.height;
@@ -56,17 +54,11 @@ public class PuzzleElementToGenerate
             pixelOffset.width = _subElement.height;
         }
 
-
-
-        // Create mask  and  fill base body of puzzle element
         mask = new float[maskWidth * maskHeight];
         for (int y = maskHeight - 1 - (int)pixelOffset.y; y > maskHeight - 1 - (int)pixelOffset.y - _baseSize; y--)
             for (int x = (int)pixelOffset.x; x < (int)pixelOffset.x + _baseSize; x++)
                 mask[y * maskWidth + x] = 1.0f;
-
-
-
-        // Include top part	(0 - flat, 1 - convex, -1 - concave)																																																																											
+																																																																											
         if (top != 0)
             FillMask(
                         (int)pixelOffset.x + (_baseSize - _subElement.width) / 2,
@@ -80,8 +72,6 @@ public class PuzzleElementToGenerate
                         top
                     );
 
-
-        // Include bottom part	(0 - flat, 1-convex, 2-concave)	
         if (bottom != 0)
             FillMask(
                         (int)pixelOffset.x + (_baseSize - _subElement.width) / 2,
@@ -94,9 +84,7 @@ public class PuzzleElementToGenerate
                         -bottom,
                         bottom
                     );
-
-
-        // Include left part (0 - flat, 1-convex, 2-concave)																																																																												
+        
         if (left != 0)
             FillMask(
                         0,
@@ -109,9 +97,7 @@ public class PuzzleElementToGenerate
                         left,
                         left
                     );
-
-
-        // Include right part (0 - flat, 1-convex, 2-concave)											
+										
         if (right != 0)
             FillMask(
                         maskWidth - _subElement.height,
@@ -126,9 +112,6 @@ public class PuzzleElementToGenerate
                     );
 
     }
-
-    //----------------------------------------------------------------------------------------------------------------------------------------------------------  
-    // Apply simple mask
     public void ApplyMask(Color[] _sourcePixels, ref Texture2D _result)
     {
         int width = _result.width;
@@ -143,9 +126,6 @@ public class PuzzleElementToGenerate
         _result.Apply();
 
     }
-
-    //----------------------------------------------------------------------------------------------------------------------------------------------------------  
-    // Fill mask array in specified "rectangle" with alpha values from  Color[] _fill 
     void FillMask(int _x, int _y, int _width, int _height, int _rowWidth, ref float[] _mask, Color[] _fill = null, int invertion = 1, int _negative = 0)
     {
         int fillPixelNum = invertion < 0 ? _fill.Length - 1 : 0;

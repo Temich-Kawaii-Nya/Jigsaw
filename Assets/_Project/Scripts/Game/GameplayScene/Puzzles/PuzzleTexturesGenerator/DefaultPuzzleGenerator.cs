@@ -7,7 +7,7 @@ public class DefaultPuzzleGenerator : IPuzzleGenerator
     private int _cols = 2;
     private int _rows = 2;
 
-    private int puzzleDefaultSize = 100;//TODO
+    private int puzzleDefaultSize = 100;
 
     private PuzzleElementToGenerate[] _puzzleGrid;
 
@@ -130,22 +130,29 @@ public class DefaultPuzzleGenerator : IPuzzleGenerator
         int rotatedPixelId, originalPixelId;
 
         if (_clockwise)
+        {
             for (int y = 0; y < _height; ++y)
+            {
                 for (int x = 0; x < _width; ++x)
                 {
                     rotatedPixelId = (x + 1) * _height - y - 1;
                     originalPixelId = _source.Length - 1 - (y * _width + x);
                     result[rotatedPixelId] = _source[originalPixelId];
                 }
+            }
+        }
         else
+        {
             for (int y = 0; y < _height; ++y)
+            {
                 for (int x = 0; x < _width; ++x)
                 {
                     rotatedPixelId = (x + 1) * _height - y - 1;
                     originalPixelId = y * _width + x;
                     result[rotatedPixelId] = _source[originalPixelId];
                 }
-
+            }
+        }
 
         return result;
     }
